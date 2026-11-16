@@ -1,0 +1,138 @@
+.pebble-stack {
+  position: fixed; inset: 0; overflow: hidden;
+  background: #fff; color: #222;
+  user-select: none; -webkit-user-select: none;
+  -webkit-touch-callout: none;       /* no long-press menu on phones */
+  transition: color .6s;
+}
+.pebble-stack .ps-canvas { display: block; position: absolute; inset: 0; touch-action: none; }
+
+.pebble-stack.dark { color: #f2f4ff; }
+.pebble-stack.dark .ps-zone { background: rgba(255, 255, 255, 0.12); }
+.pebble-stack.dark .back-link { background: rgba(255, 255, 255, 0.12); }
+
+/* free scroll lock button (top right) */
+.ps-lock {
+  position: absolute;
+  top: calc(14px + var(--safe-top)); right: calc(16px + var(--safe-right));
+  z-index: 5;
+  width: 46px; height: 46px; border-radius: 50%; border: 0; padding: 0; cursor: pointer;
+  font-size: 22px; line-height: 1;
+  background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(6px);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  transition: transform .15s, background .3s, box-shadow .3s;
+}
+.ps-lock:active { transform: scale(0.92); }
+.ps-lock.free { background: #fff; box-shadow: 0 0 0 3px #222, 0 4px 14px rgba(0, 0, 0, 0.15); }
+.pebble-stack.dark .ps-lock { background: rgba(255, 255, 255, 0.14); }
+.pebble-stack.dark .ps-lock.free { background: rgba(255, 255, 255, 0.2); box-shadow: 0 0 0 3px #f2f4ff; }
+.ps-lock:focus-visible { outline: 3px solid currentColor; outline-offset: 3px; }
+
+.ps-free-note {
+  position: absolute; bottom: calc(20px + var(--safe-bottom)); left: 50%; transform: translateX(-50%);
+  z-index: 4; pointer-events: none; white-space: nowrap;
+  font-weight: 800; font-size: 14px; padding: 8px 16px; border-radius: 999px;
+  background: rgba(34, 34, 34, 0.85); color: #fff;
+}
+.pebble-stack.dark .ps-free-note { background: rgba(255, 255, 255, 0.15); }
+
+.ps-hud {
+  position: absolute; top: calc(14px + var(--safe-top)); left: 50%; transform: translateX(-50%);
+  text-align: center; pointer-events: none; z-index: 4;
+}
+.ps-score { font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: 64px; line-height: 1; }
+.ps-score.pop { animation: ps-pop .35s ease-out; }
+@keyframes ps-pop { 40% { transform: scale(1.25); } }
+.ps-sub { font-weight: 700; font-size: 15px; opacity: .65; margin-top: 4px; white-space: nowrap; }
+.ps-zone {
+  display: inline-block; margin-top: 8px; padding: 3px 12px; border-radius: 999px;
+  font-size: 13px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase;
+  background: rgba(0, 0, 0, 0.05); white-space: nowrap;
+}
+
+.ps-hint {
+  position: absolute; z-index: 4; pointer-events: none; left: -999px; top: -999px;
+  font-weight: 800; font-size: 14px; color: #555;
+  background: #fff; padding: 8px 12px; border-radius: 12px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+  transform: translate(-100%, -100%); white-space: nowrap;
+  transition: opacity .4s;
+}
+.ps-hint::after {
+  content: ''; position: absolute; right: 18px; bottom: -6px;
+  border: 6px solid transparent; border-bottom: 0; border-top-color: #fff;
+}
+.ps-hint.gone { opacity: 0; }
+
+.ps-toast {
+  position: absolute; left: 50%; top: calc(150px + var(--safe-top)); transform: translate(-50%, -8px);
+  z-index: 4; pointer-events: none; opacity: 0;
+  max-width: calc(100vw - 32px); text-align: center;
+  font-weight: 800; font-size: 15px; padding: 8px 16px; border-radius: 999px;
+  background: #222; color: #fff; transition: opacity .25s, transform .25s;
+}
+.ps-toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+.ps-over {
+  position: absolute; inset: 0; z-index: 10;
+  display: flex; align-items: center; justify-content: center;
+  padding: calc(16px + var(--safe-top)) 16px calc(16px + var(--safe-bottom));
+  background: rgba(255, 255, 255, 0.35); backdrop-filter: blur(3px);
+  transition: opacity .3s;
+}
+.ps-over.hidden { opacity: 0; pointer-events: none; }
+.ps-card {
+  background: #fff; color: #222; border-radius: 22px; padding: 28px 36px 24px;
+  text-align: center; width: min(340px, 100%);
+  max-height: 100%; overflow: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
+  transition: transform .35s cubic-bezier(.2, 1.4, .4, 1);
+}
+.ps-over.hidden .ps-card { transform: translateY(20px); }
+.ps-card h2 { font-family: 'Fredoka', sans-serif; font-weight: 600; margin: 0 0 6px; font-size: 26px; }
+.ps-card .big { font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: 72px; line-height: 1; }
+.ps-card .muted { margin: 4px 0; opacity: .6; font-weight: 700; }
+.ps-card .newbest { margin: 10px 0 2px; font-weight: 800; color: #d0603f; }
+.ps-card button {
+  margin-top: 16px; width: 100%; border: 0; cursor: pointer;
+  font: 700 18px 'Fredoka', sans-serif; color: #fff; background: #222;
+  padding: 14px 12px; border-radius: 14px; transition: transform .12s;
+}
+.ps-card button:active { transform: scale(0.98); }
+.ps-card .link { display: inline-block; margin-top: 12px; padding: 6px; color: #666; font-weight: 700; font-size: 14px; }
+
+/* hover effects only on devices with a mouse (no "stuck" hover after a tap) */
+@media (hover: hover) {
+  .ps-lock:hover { transform: translateY(-1px) scale(1.05); }
+  .ps-card button:hover { transform: translateY(-2px); }
+}
+
+/* phones (portrait) */
+@media (max-width: 520px) {
+  .ps-hud { top: calc(8px + var(--safe-top)); }
+  .ps-score { font-size: 44px; }
+  .ps-sub { font-size: 13px; margin-top: 2px; }
+  .ps-zone { font-size: 11px; margin-top: 6px; padding: 2px 10px; }
+  .ps-toast { top: calc(120px + var(--safe-top)); font-size: 13px; border-radius: 14px; }
+  .ps-hint { white-space: normal; width: 180px; font-size: 13px; }
+  .ps-lock {
+    top: calc(10px + var(--safe-top)); right: calc(10px + var(--safe-right));
+    width: 42px; height: 42px; font-size: 19px;
+  }
+  .ps-free-note { font-size: 12px; padding: 7px 14px; }
+  .ps-card { padding: 22px 22px 18px; }
+  .ps-card .big { font-size: 60px; }
+}
+
+/* phones in landscape (very short screens) */
+@media (max-height: 500px) {
+  .ps-hud { top: calc(6px + var(--safe-top)); }
+  .ps-score { font-size: 34px; }
+  .ps-sub { font-size: 12px; margin-top: 0; }
+  .ps-zone { font-size: 10px; margin-top: 4px; padding: 1px 8px; }
+  .ps-toast { top: calc(80px + var(--safe-top)); }
+  .ps-card { padding: 16px 22px 14px; }
+  .ps-card h2 { font-size: 20px; }
+  .ps-card .big { font-size: 44px; }
+  .ps-card button { margin-top: 10px; padding: 10px; }
+}

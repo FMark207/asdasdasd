@@ -1,0 +1,104 @@
+.hub header {
+  text-align: center;
+  padding: calc(64px + var(--safe-top)) calc(16px + var(--safe-right)) 36px calc(16px + var(--safe-left));
+}
+.hub h1 {
+  font-family: 'Fredoka', sans-serif; font-weight: 700;
+  font-size: clamp(44px, 9vw, 76px); margin: 0; letter-spacing: -0.02em;
+}
+.hub h1 span { display: inline-block; transition: transform .2s; }
+.hub header p { margin: 10px 0 0; font-size: 18px; color: #777; font-weight: 700; }
+
+.hub .grid {
+  max-width: 1040px; margin: 0 auto;
+  padding: 0 calc(16px + var(--safe-right)) calc(80px + var(--safe-bottom)) calc(16px + var(--safe-left));
+  display: grid; gap: 34px 26px;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+}
+.hub .tile { text-decoration: none; color: inherit; display: block; }
+.hub .thumb {
+  aspect-ratio: 4 / 3; border-radius: 18px; overflow: hidden; position: relative;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  transition: transform .2s cubic-bezier(.2, 1.5, .4, 1), box-shadow .2s;
+}
+.hub .tile:focus-visible .thumb {
+  transform: translateY(-5px) rotate(-1deg);
+  box-shadow: 0 0 0 3px #111, 0 14px 30px rgba(0, 0, 0, 0.15);
+}
+/* tap feedback on phones */
+.hub .tile:active .thumb { transform: scale(0.97); box-shadow: 0 0 0 3px #111; }
+.hub .tile:focus-visible { outline: none; }
+.hub .thumb canvas { width: 100%; height: 100%; display: block; }
+.hub .tile h3 { font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 21px; margin: 14px 0 2px; }
+.hub .tile .meta { font-size: 14px; color: #888; font-weight: 700; }
+
+/* "Would You Press The Button?" thumbnail */
+.hub .btn-thumb {
+  container-type: inline-size;   /* lets the "50%" text scale with the card */
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, #fafafa 0 50%, #15171f 50% 100%);
+}
+.hub .mini-btn {
+  width: 42%; aspect-ratio: 1; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: #ec4b45; box-shadow: 0 7px 0 #b9302b;
+  transform: translateY(-4px); transition: transform .15s, box-shadow .15s;
+}
+.hub .mini-btn span { color: #fff; font: 600 26px 'Fredoka', sans-serif; }
+
+/* placeholders */
+.hub .tile.soon { pointer-events: none; }
+.hub .tile.soon .thumb {
+  background: repeating-linear-gradient(-45deg, #f5f5f5 0 14px, #efefef 14px 28px);
+  box-shadow: none; display: flex; align-items: center; justify-content: center;
+  color: #b5b5b5; font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 18px;
+}
+.hub .tile.soon h3 { color: #bbb; }
+
+/* hover effects only on devices with a mouse (no "stuck" hover after a tap) */
+@media (hover: hover) {
+  .hub h1 span:hover { transform: translateY(-6px) rotate(-4deg); }
+  .hub .tile:hover .thumb {
+    transform: translateY(-5px) rotate(-1deg);
+    box-shadow: 0 0 0 3px #111, 0 14px 30px rgba(0, 0, 0, 0.15);
+  }
+  .hub .tile:hover .mini-btn { transform: translateY(2px); box-shadow: 0 1px 0 #b9302b; }
+}
+
+/* phones: two smaller cards per row */
+@media (max-width: 520px) {
+  .hub header { padding-top: calc(40px + var(--safe-top)); padding-bottom: 26px; }
+  .hub header p { font-size: 15px; }
+  .hub .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px 14px; }
+  .hub .thumb { border-radius: 14px; }
+  .hub .tile h3 { font-size: 16px; margin-top: 9px; line-height: 1.2; }
+  .hub .tile .meta { font-size: 12px; }
+  .hub .mini-btn { box-shadow: 0 5px 0 #b9302b; }
+  .hub .mini-btn span { font-size: 11cqw; }
+  .hub .tile.soon .thumb { font-size: 14px; }
+}
+
+/* tablets: two big cards per row */
+@media (min-width: 521px) and (max-width: 899px) {
+  .hub .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 36px 24px; }
+  .hub .mini-btn span { font-size: 11cqw; }
+}
+
+/* laptops & desktops: bigger title and text, three large cards per row */
+@media (min-width: 900px) {
+  .hub header { padding-top: calc(80px + var(--safe-top)); padding-bottom: 52px; }
+  .hub h1 { font-size: clamp(76px, 7.5vw, 110px); }
+  .hub header p { font-size: 22px; margin-top: 14px; }
+  .hub .grid {
+    max-width: 1320px;
+    padding-left: calc(40px + var(--safe-left)); padding-right: calc(40px + var(--safe-right));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 52px 40px;
+  }
+  .hub .thumb { border-radius: 24px; }
+  .hub .tile h3 { font-size: 27px; margin-top: 18px; }
+  .hub .tile .meta { font-size: 16px; }
+  .hub .mini-btn { box-shadow: 0 10px 0 #b9302b; }
+  .hub .mini-btn span { font-size: 11cqw; }
+  .hub .tile.soon .thumb { font-size: 22px; }
+}

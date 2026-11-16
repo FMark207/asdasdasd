@@ -1,0 +1,200 @@
+/* page colours per theme */
+.press-page {
+  --bg: #ffffff;
+  --fg: #1f1f1f;
+  --muted: #8a8a8a;
+  --card: rgba(255, 255, 255, 0.85);
+  --card-shadow: 0 6px 24px rgba(0, 0, 0, 0.07);
+  --chip: rgba(0, 0, 0, 0.05);
+
+  position: relative; min-height: 100vh; min-height: 100dvh; overflow-x: hidden;
+  background: var(--bg); color: var(--fg);
+  transition: background-color .8s ease, color .8s ease;
+}
+.press-page.theme-dark {
+  --bg: #14151b;
+  --fg: #f7cf6b;               /* warm, soft yellow */
+  --muted: rgba(247, 207, 107, 0.55);
+  --card: rgba(32, 33, 42, 0.85);
+  --card-shadow: 0 6px 30px rgba(0, 0, 0, 0.5);
+  --chip: rgba(247, 207, 107, 0.12);
+}
+.press-page.theme-rich { --fg: #2f7a45; --chip: rgba(47, 122, 69, 0.1); }
+
+/* the lights flicker before the power goes out */
+.press-page.flicker { animation: ptb-flicker .9s steps(1) 1; }
+@keyframes ptb-flicker {
+  0%   { background: #14151b; }
+  12%  { background: #ffffff; }
+  25%  { background: #14151b; }
+  40%  { background: #ffffff; }
+  55%  { background: #14151b; }
+  70%  { background: #ffffff; }
+  100% { background: #14151b; }
+}
+
+.press-page .back-link { color: var(--fg); background: var(--card); }
+
+.press-page .stage {
+  position: relative; z-index: 1;
+  min-height: 100vh; min-height: 100dvh;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 22px; text-align: center;
+  padding: calc(64px + var(--safe-top)) calc(16px + var(--safe-right)) calc(24px + var(--safe-bottom)) calc(16px + var(--safe-left));
+}
+
+.press-page .scenario {
+  background: var(--card); box-shadow: var(--card-shadow);
+  backdrop-filter: blur(6px);
+  border-radius: 22px; padding: 20px 28px; max-width: 560px; width: 100%;
+  transition: background .8s, box-shadow .8s;
+  animation: ptb-swap .45s ease;
+}
+@keyframes ptb-swap { 0% { transform: translateY(-14px); opacity: 0; } 100% { transform: none; opacity: 1; } }
+.press-page .scenario .label {
+  display: inline-block; padding: 3px 12px; border-radius: 999px; background: var(--chip);
+  font-size: 13px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; color: var(--muted);
+  transition: background .8s;
+}
+.press-page .scenario h1 {
+  font-family: 'Fredoka', sans-serif; font-weight: 600;
+  font-size: clamp(24px, 5vw, 34px); line-height: 1.2; margin: 12px 0 0;
+}
+
+.press-page .button-area { display: flex; flex-direction: column; align-items: center; gap: 18px; }
+
+/* simple flat button with a solid "edge" underneath */
+.big-btn {
+  --size: clamp(150px, min(40vw, 28vh), 210px);
+  --red: #ec4b45;
+  --edge: #b9302b;
+  width: var(--size); height: var(--size); border-radius: 50%;
+  border: 0; padding: 0; cursor: pointer;
+  background: var(--red);
+  box-shadow: 0 10px 0 var(--edge);
+  position: relative; z-index: 2;
+  transition: transform .08s, box-shadow .08s, background-color .4s;
+  -webkit-tap-highlight-color: transparent;
+}
+.big-btn .cap {
+  display: flex; align-items: center; justify-content: center; height: 100%;
+  color: #fff; font-family: 'Fredoka', sans-serif; font-weight: 600;
+  font-size: calc(var(--size) * 0.25); letter-spacing: 0.01em;
+  font-variant-numeric: tabular-nums;
+}
+.big-btn:active:not(:disabled), .big-btn.pressed { transform: translateY(8px); box-shadow: 0 2px 0 var(--edge); }
+.big-btn:disabled { cursor: default; }
+/* solid colours (no transparency) so the background never shows through the button */
+.big-btn.done { --red: #f2847f; --edge: #cf5f5a; }
+.big-btn.left { --red: #cfcfd3; --edge: #a9a9ae; }
+.theme-dark .big-btn.left { --red: #3a3b45; --edge: #2a2b33; }
+.big-btn:focus-visible { outline: 3px solid var(--fg); outline-offset: 8px; }
+
+.press-page .leave {
+  border: 2px solid var(--fg); background: transparent; color: var(--fg);
+  font: 700 16px 'Fredoka', sans-serif; padding: 9px 22px; border-radius: 999px; cursor: pointer;
+  transition: transform .12s, background .2s, color .8s, border-color .8s, opacity .3s;
+}
+.press-page .leave:disabled { opacity: 0; pointer-events: none; }
+
+.press-page .result {
+  min-height: 1.6em; margin: 0; max-width: 520px;
+  font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 22px;
+  opacity: 0; transform: translateY(6px); transition: opacity .4s, transform .4s;
+}
+.press-page .result.show { opacity: 1; transform: none; }
+
+.press-page .next {
+  border: 0; cursor: pointer;
+  background: var(--fg); color: var(--bg);
+  font: 700 18px 'Fredoka', sans-serif; padding: 13px 28px; border-radius: 14px;
+  transition: transform .15s, opacity .4s, background .8s, color .8s;
+}
+.press-page .next.hidden { opacity: 0; pointer-events: none; transform: translateY(10px); }
+
+.press-page .stats { margin: 0; font-size: 13px; font-weight: 700; color: var(--muted); }
+
+/* ---------- money rain ---------- */
+.money-layer {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
+}
+.bill {
+  position: absolute; top: 0;
+  width: 64px; height: 32px; border-radius: 5px;
+  background: #86c98a; border: 2px solid #4f9a57;
+  display: flex; align-items: center; justify-content: center;
+  animation: ptb-fall linear forwards;
+  will-change: transform;
+}
+.bill::before {                      /* thin inner frame */
+  content: ''; position: absolute; inset: 3px;
+  border: 1.5px solid rgba(255, 255, 255, 0.55); border-radius: 3px;
+}
+.bill span {                          /* the round "$" seal */
+  width: 20px; height: 20px; border-radius: 50%;
+  background: #4f9a57; color: #e9f7ea;
+  display: flex; align-items: center; justify-content: center;
+  font: 700 13px 'Fredoka', sans-serif;
+}
+@keyframes ptb-fall {
+  0%   { transform: translate(0, -60px) rotate(0deg) rotateX(0deg) scale(var(--scale)); }
+  25%  { transform: translate(var(--sway), 25vh) rotate(calc(var(--spin) * .25)) rotateX(60deg) scale(var(--scale)); }
+  50%  { transform: translate(0, 52vh) rotate(calc(var(--spin) * .5)) rotateX(0deg) scale(var(--scale)); }
+  75%  { transform: translate(calc(var(--sway) * -1), 78vh) rotate(calc(var(--spin) * .75)) rotateX(60deg) scale(var(--scale)); }
+  100% { transform: translate(0, 108vh) rotate(var(--spin)) rotateX(0deg) scale(var(--scale)); }
+}
+
+/* hover effects only on devices with a mouse (no "stuck" hover after a tap) */
+@media (hover: hover) {
+  .big-btn:hover:not(:disabled):not(:active) { transform: translateY(-2px); box-shadow: 0 12px 0 var(--edge); }
+  .press-page .leave:hover:not(:disabled) { transform: translateY(-2px); background: var(--chip); }
+  .press-page .next:hover { transform: translateY(-2px); }
+}
+.press-page .leave:active:not(:disabled), .press-page .next:active { transform: scale(0.96); }
+
+/* phones (portrait) */
+@media (max-width: 520px) {
+  .press-page .stage { gap: 18px; padding-top: calc(60px + var(--safe-top)); }
+  .press-page .scenario { padding: 16px 18px; border-radius: 18px; }
+  .press-page .scenario h1 { font-size: 23px; }
+  .press-page .result { font-size: 19px; padding: 0 8px; }
+  .press-page .leave { padding: 11px 26px; }          /* bigger tap target */
+  .press-page .next { width: 100%; max-width: 320px; padding: 15px 20px; }
+  .big-btn { --size: clamp(150px, min(52vw, 30vh), 210px); }
+  .bill { width: 52px; height: 26px; }
+  .bill span { width: 16px; height: 16px; font-size: 11px; }
+}
+
+/* phones in landscape (very short screens): put the scenario next to the button */
+@media (max-height: 500px) and (min-width: 560px) {
+  .press-page .stage {
+    display: grid; grid-template-columns: minmax(0, 480px) auto;
+    justify-content: center; align-content: center;
+    column-gap: 40px; row-gap: 10px; padding-top: calc(56px + var(--safe-top));
+  }
+  .press-page .scenario { grid-column: 1; grid-row: 1; align-self: center; }
+  .press-page .button-area { grid-column: 2; grid-row: 1; gap: 12px; }
+  .press-page .result, .press-page .next, .press-page .stats { grid-column: 1 / -1; justify-self: center; }
+  .press-page .scenario h1 { font-size: 22px; }
+  .big-btn { --size: clamp(110px, 40vh, 170px); }
+}
+
+/* laptops & desktops: bigger card, text and button */
+@media (min-width: 900px) and (min-height: 560px) {
+  .press-page .stage { gap: 18px; padding-top: calc(72px + var(--safe-top)); }
+  .press-page .scenario { max-width: 940px; padding: 26px 44px 30px; border-radius: 28px; }
+  .press-page .scenario .label { font-size: 15px; padding: 4px 14px; }
+  .press-page .scenario h1 { font-size: clamp(32px, 3.1vw, 46px); margin-top: 12px; }
+  .press-page .button-area { gap: 22px; }
+  .big-btn { --size: clamp(200px, 29vh, 320px); box-shadow: 0 14px 0 var(--edge); }
+  .big-btn:active:not(:disabled), .big-btn.pressed { transform: translateY(12px); box-shadow: 0 2px 0 var(--edge); }
+  .press-page .leave { font-size: 20px; padding: 12px 32px; border-width: 3px; }
+  .press-page .result { font-size: 30px; max-width: 760px; }
+  .press-page .next { font-size: 22px; padding: 16px 38px; border-radius: 16px; }
+  .press-page .stats { font-size: 15px; }
+  .bill { width: 76px; height: 38px; border-radius: 6px; }
+  .bill span { width: 24px; height: 24px; font-size: 15px; }
+}
+@media (min-width: 900px) and (min-height: 560px) and (hover: hover) {
+  .big-btn:hover:not(:disabled):not(:active) { transform: translateY(-3px); box-shadow: 0 17px 0 var(--edge); }
+}

@@ -1,33 +1,49 @@
-# React + TypeScript + Vite
+# The Toolbox
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+A collection of small browser toys, built with React + TypeScript + Vite.
 
-Currently, two official plugins are available:
+## Projects
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+| Page | Path | Code |
+| --- | --- | --- |
+| Hub (pick a game) | `#/` | `src/pages/Hub.tsx` |
+| Pebble Stack | `#/pebble-stack` | `src/games/pebble-stack/` |
+| Would You Press The Button? | `#/press-the-button` | `src/games/press-the-button/` |
 
-## React Compiler
+## Run it
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```bash
+npm install
+npm run dev      # local dev server
+npm run build    # production build in dist/
+npm run lint
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
-"# asdasdasd" 
+## Structure
+
+```
+src/
+  App.tsx                 picks the page from the URL hash
+  games/index.ts          list of all games (add new ones here)
+  pages/Hub.tsx           the home page with the game cards
+  components/
+    ShapesBackground.tsx  drifting squares / circles / triangles
+  lib/
+    pebbles.ts            procedural realistic pebble generator
+    router.ts             tiny hash router
+    storage.ts            safe localStorage helpers (scores & stats)
+  games/pebble-stack/
+    PebbleStack.tsx       HUD, hint, game-over card (React)
+    engine.ts             physics (Matter.js), input, camera, drawing
+    scenery.ts            sky, clouds, space, woven mat
+  games/press-the-button/
+    PressTheButton.tsx    the page and its logic
+    scenarios.ts          the scenarios (add more here)
+    MoneyRain.tsx         falling money effect
+```
+
+## Adding a scenario to "Would You Press The Button?"
+
+Add an object to `SCENARIOS` in `src/games/press-the-button/scenarios.ts`.
+Each outcome can switch the theme (`light`, `dark`, `rich`), flicker the lights,
+rain money, and make the background shapes burst or speed up.
