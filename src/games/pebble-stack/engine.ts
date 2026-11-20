@@ -39,7 +39,10 @@ interface Entry {
 }
 
 
-const PEB_OPTS = { friction: 0.95, frictionStatic: 2.2, restitution: 0.01, frictionAir: 0.015, density: 0.002, slop: 0.03 }
+// very grippy stones (friction above 1 = rough, "sticky" rock) so pebbles barely slide off
+const PEB_OPTS = { friction: 1.5, frictionStatic: 6, restitution: 0, frictionAir: 0.015, density: 0.002, slop: 0.03 }
+// extra slow-down for a freshly dropped pebble while it is touching the stack (0..1 per step)
+const CONTACT_DAMP = 0.05
 const MAT_HALF = 200
 
 /*
@@ -112,6 +115,7 @@ export function createPebbleStackGame(canvas: HTMLCanvasElement, cb: GameCallbac
   let tray: { peb: Pebble; t: number } | null = null
   let held: Entry | null = null
   let released: Entry | null = null
+  let releasedTouching = false
   let state: 'ready' | 'holding' | 'settling' | 'over' = 'ready'
   let score = 0, stackTop = 0, baseTop = 0, settleFrames = 0, settleTime = 0
   let rng: Rng = makeRng(1)
@@ -181,8 +185,8 @@ export function createPebbleStackGame(canvas: HTMLCanvasElement, cb: GameCallbac
       if (p.mobility === 'locked') {
         if (!p.body.isStatic) Body.setStatic(p.body, true)
       } else {
-        p.body.friction = 1.1
-        p.body.frictionStatic = p.mobility === 'barely' ? 4 : 2.6
+        p.body.friction = 1.7
+        p.body.frictionStatic = p.mobility === 'barely' ? 8 : 6
       }
     })
   }
@@ -195,6 +199,13 @@ export function createPebbleStackGame(canvas: HTMLCanvasElement, cb: GameCallbac
       Body.setVelocity(b, { x: b.velocity.x * k, y: b.velocity.y * k })
       Body.setAngularVelocity(b, b.angularVelocity * k)
     }
+    // the pebble you just dropped: once it touches the stack it quickly loses its
+    // slide and spin, so it settles where it lands instead of sliding off
+    if (released && releasedTouching) {
+      const k = 1 - CONTACT_DAMP, b = released.body
+      Body.setVelocity(b, { x: b.velocity.x * k, y: b.velocity.y * k })
+      Body.setAngularVelocity(b, b.angularVelocity * k)
+    }
   }
 
   // any pebble other than the base touching the wooden board = game over
@@ -202,6 +213,11 @@ export function createPebbleStackGame(canvas: HTMLCanvasElement, cb: GameCallbac
     const check = (ev: Matter.IEventCollision<Matter.Engine>) => {
       if (state === 'over') return
       for (const pair of ev.pairs) {
+        // remember whether the dropped pebble is resting on another pebble
+        if (released && (pair.bodyA === released.body || pair.bodyB === released.body)) {
+          const other = pair.bodyA === released.body ? pair.bodyB : pair.bodyA
+          if (other.label !== 'mat') releasedTouching = true
+        }
         const other = pair.bodyA.label === 'mat' ? pair.bodyB : pair.bodyB.label === 'mat' ? pair.bodyA : null
         if (!other) continue
         const entry = pebbles.find(p => p.body === other)
@@ -351,6 +367,7 @@ export function createPebbleStackGame(canvas: HTMLCanvasElement, cb: GameCallbac
     }
 
     applyStackDamping()
+    releasedTouching = false // re-detected by the collision events during this update
     Engine.update(engine, 1000 / 60)
 
     // something fell off the mat?
@@ -538,6 +555,8 @@ export function createPebbleStackGame(canvas: HTMLCanvasElement, cb: GameCallbac
     debug: {
       get state() { return state },
       get score() { return score },
+      /** world → screen position (for automated tests) */
+      toScreen: (x: number, y: number) => w2s(x, y),
       get pebbles() { return pebbles },
       trayPos: () => (tray ? trayPos() : null),
       peek(h: number) { stackTop = -h; camY = Math.min(0, stackTop + (ground - 0.42) * H / scale) },
