@@ -234,3 +234,47 @@
   transition: width .4s ease, height .4s ease, transform .08s, box-shadow .08s, background-color .4s;
 }
 .press-page .stage.has-translation .leave { display: none; }
+
+/* ---------- nuke scenario ---------- */
+/* normal scenarios: the wrappers don't affect the layout at all */
+.press-page .no-hazard, .press-page .no-hazard .hazard-inner { display: contents; }
+
+/* yellow/black danger tape in a square around the button */
+.press-page .hazard {
+  padding: 14px;
+  border-radius: 10px;
+  background: repeating-linear-gradient(45deg, #f5c400 0 16px, #1b1b1f 16px 32px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+}
+.press-page .hazard-inner {
+  padding: 22px 22px 30px;        /* extra at the bottom for the button's edge */
+  border-radius: 4px;
+  background: #eceef2;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+.press-page.theme-dark .hazard-inner { background: #23252e; }
+
+/* rockets fly above the page content but don't block clicks */
+.nuke-layer {
+  position: fixed; inset: 0; width: 100%; height: 100%;
+  z-index: 3; pointer-events: none;
+}
+
+/* the ground shakes during the launch */
+.press-page.rumble .stage { animation: ptb-rumble .12s linear infinite; }
+@keyframes ptb-rumble {
+  0%   { transform: translate(0, 0); }
+  25%  { transform: translate(-3px, 2px); }
+  50%  { transform: translate(2px, -2px); }
+  75%  { transform: translate(-2px, -1px); }
+  100% { transform: translate(0, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .press-page.rumble .stage { animation: none; }
+}
+
+@media (max-width: 520px) {
+  .press-page .hazard { padding: 10px; }
+  .press-page .hazard-inner { padding: 14px 14px 22px; }
+  .press-page .hazard .big-btn { --size: clamp(130px, min(44vw, 26vh), 190px); }
+}

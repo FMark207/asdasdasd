@@ -17,7 +17,11 @@
  *   burst   – spin & scatter the background shapes
  *   speed   – temporary speed-up of the background shapes
  *   reveal  – cross out the text and show the translation under it
+ *   nukes   – launch two nuke rockets up the sides of the screen
+ *   shake   – rumble the whole page for a few seconds
  *   msg     – the message under the button
+ *
+ * A scenario can also set `danger: true` to put hazard tape around the button.
  */
 export type Theme = 'light' | 'dark' | 'rich'
 
@@ -29,6 +33,8 @@ export interface Outcome {
   burst?: boolean
   speed?: number
   reveal?: boolean
+  nukes?: boolean
+  shake?: boolean
 }
 
 export interface Scenario {
@@ -37,6 +43,7 @@ export interface Scenario {
   translation?: string
   chance: number
   hidePercent?: boolean
+  danger?: boolean
   hit: Outcome
   miss: Outcome
   leaveMsg?: string
@@ -59,6 +66,15 @@ export const SCENARIOS: Scenario[] = [
     hit: { msg: 'Now you understand everything… but you can’t say a word.', reveal: true, burst: true },
     miss: { msg: '', reveal: true },
     leaveMsg: 'You will never know what it said.',
+  },
+  {
+    text: 'You find a button in your room with a label reading ‘launch nukes’. You don’t know if it actually does anything. Do you press it?',
+    chance: 1,
+    hidePercent: true,
+    danger: true,
+    hit: { msg: 'Oh no. It definitely does something.', nukes: true, shake: true, burst: true, speed: 4 },
+    miss: { msg: '' },
+    leaveMsg: 'Probably for the best.',
   },
 ]
 

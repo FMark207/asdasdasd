@@ -3,6 +3,7 @@ import ShapesBackground, { type Rgba, type ShapesHandle } from '../../components
 import { href } from '../../lib/router'
 import { KEYS, loadJSON, saveJSON, type ButtonStats } from '../../lib/storage'
 import MoneyRain from './MoneyRain'
+import NukeLaunch from './NukeLaunch'
 import { LEAVE_MESSAGES, SCENARIOS, type Outcome, type Theme } from './scenarios'
 import './PressTheButton.css'
 
@@ -26,6 +27,8 @@ export default function PressTheButton() {
   const [flicker, setFlicker] = useState(false)
   const [money, setMoney] = useState(false)
   const [revealed, setRevealed] = useState(false)
+  const [nukes, setNukes] = useState(false)
+  const [shake, setShake] = useState(false)
   const [result, setResult] = useState<string | null>(null)
   const [showNext, setShowNext] = useState(false)
   const [stats, setStats] = useState<ButtonStats>(() => loadJSON<ButtonStats>(KEYS.pressTheButton, { pressed: 0, left: 0 }))
@@ -51,6 +54,8 @@ export default function PressTheButton() {
   function play(o: Outcome) {
     if (o.money) setMoney(true)
     if (o.reveal) setRevealed(true)
+    if (o.nukes) setNukes(true)
+    if (o.shake) { setShake(true); later(() => setShake(false), 3200) }
     if (o.speed) shapes.current?.setSpeed(o.speed)
     const applyTheme = () => {
       if (o.theme) setTheme(o.theme)
@@ -88,7 +93,7 @@ export default function PressTheButton() {
   function nextScenario() {
     timers.current.forEach(clearTimeout)
     timers.current = []
-    setTheme('light'); setFlicker(false); setMoney(false); setRevealed(false)
+    setTheme('light'); setFlicker(false); setMoney(false); setRevealed(false); setNukes(false); setShake(false)
     setChoice('none'); setResult(null); setShowNext(false)
     setIndex(i => i + 1)
   }
@@ -98,9 +103,10 @@ export default function PressTheButton() {
     .filter(Boolean).join(' ')
 
   return (
-    <div className={`press-page theme-${theme}${flicker ? ' flicker' : ''}`}>
+    <div className={`press-page theme-${theme}${flicker ? ' flicker' : ''}${shake ? ' rumble' : ''}`}>
       <ShapesBackground ref={shapes} color={SHAPE_COLORS[theme]} />
       {money && <MoneyRain />}
+      {nukes && <NukeLaunch />}
 
       <a className="back-link" href={href('/')}>&larr; All games</a>
 
@@ -112,9 +118,13 @@ export default function PressTheButton() {
         </section>
 
         <div className="button-area">
-          <button className={btnClass} onClick={press} disabled={choice !== 'none'} aria-label="Press the button">
-            {!scenario.hidePercent && <span className="cap">{Math.round(scenario.chance * 100)}%</span>}
-          </button>
+          <div className={scenario.danger ? 'hazard' : 'no-hazard'}>
+            <div className="hazard-inner">
+              <button className={btnClass} onClick={press} disabled={choice !== 'none'} aria-label="Press the button">
+                {!scenario.hidePercent && <span className="cap">{Math.round(scenario.chance * 100)}%</span>}
+              </button>
+            </div>
+          </div>
           <button className="leave" onClick={leave} disabled={choice !== 'none'}>Leave it</button>
         </div>
 
