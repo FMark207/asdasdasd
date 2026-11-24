@@ -25,6 +25,7 @@ export default function PressTheButton() {
   const [theme, setTheme] = useState<Theme>('light')
   const [flicker, setFlicker] = useState(false)
   const [money, setMoney] = useState(false)
+  const [revealed, setRevealed] = useState(false)
   const [result, setResult] = useState<string | null>(null)
   const [showNext, setShowNext] = useState(false)
   const [stats, setStats] = useState<ButtonStats>(() => loadJSON<ButtonStats>(KEYS.pressTheButton, { pressed: 0, left: 0 }))
@@ -49,6 +50,7 @@ export default function PressTheButton() {
 
   function play(o: Outcome) {
     if (o.money) setMoney(true)
+    if (o.reveal) setRevealed(true)
     if (o.speed) shapes.current?.setSpeed(o.speed)
     const applyTheme = () => {
       if (o.theme) setTheme(o.theme)
@@ -80,13 +82,13 @@ export default function PressTheButton() {
     setChoice('left')
     bumpStat('left')
     shapes.current?.setSpeed(0.2)
-    showResult(LEAVE_MESSAGES[Math.floor(Math.random() * LEAVE_MESSAGES.length)])
+    showResult(scenario.leaveMsg ?? LEAVE_MESSAGES[Math.floor(Math.random() * LEAVE_MESSAGES.length)])
   }
 
   function nextScenario() {
     timers.current.forEach(clearTimeout)
     timers.current = []
-    setTheme('light'); setFlicker(false); setMoney(false)
+    setTheme('light'); setFlicker(false); setMoney(false); setRevealed(false)
     setChoice('none'); setResult(null); setShowNext(false)
     setIndex(i => i + 1)
   }
@@ -102,15 +104,16 @@ export default function PressTheButton() {
 
       <a className="back-link" href={href('/')}>&larr; All games</a>
 
-      <main className="stage">
+      <main className={'stage' + (revealed && scenario.translation ? ' has-translation' : '')}>
         <section className="scenario" key={index}>
           <div className="label">Scenario {(index % SCENARIOS.length) + 1}</div>
-          <h1>{scenario.text}</h1>
+          <h1 lang={scenario.lang} className={revealed ? 'crossed' : undefined}>{scenario.text}</h1>
+          {scenario.translation && revealed && <p className="translation">{scenario.translation}</p>}
         </section>
 
         <div className="button-area">
           <button className={btnClass} onClick={press} disabled={choice !== 'none'} aria-label="Press the button">
-            <span className="cap">{Math.round(scenario.chance * 100)}%</span>
+            {!scenario.hidePercent && <span className="cap">{Math.round(scenario.chance * 100)}%</span>}
           </button>
           <button className="leave" onClick={leave} disabled={choice !== 'none'}>Leave it</button>
         </div>
